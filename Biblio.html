@@ -1,0 +1,834 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Bibliothèque Numérique - Biblio•Connect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        header {
+            background-color: #F9F9F9;
+            color: skyblue;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-size: 15px;
+            text-align: center;
+            padding: 40px 20px;
+            min-width: max-content;
+        }
+
+        body {
+            background-color: white;
+            margin: 0;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 14px; 
+            min-width: max-content; 
+        }
+
+        nav {
+            background-color: white;
+            border-bottom: 1px solid #eeeeee;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .menu-onglets {
+            list-style-type: none;
+            padding: 0; 
+            margin: 0;
+            display: flex;
+            gap: 60px; 
+        }
+
+        .menu-onglets a {
+            color: #111111;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 1px;
+            padding: 8px 4px;
+            transition: all 0.2s ease;
+        }
+
+        .menu-onglets a:hover {
+            color: skyblue;
+        }
+
+        .barre-recherche-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px 40px 10px 40px;
+        }
+
+        .recherche-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .recherche-wrapper input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .recherche-wrapper input:focus {
+            border-color: skyblue;
+        }
+
+        .recherche-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 16px;
+        }
+
+        .zone-contenu {
+            font-family: Arial, sans-serif;
+            padding: 20px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bloc-texte {
+            display: none;
+            margin-bottom: 40px;
+        }
+
+        #contenu-accueil {
+            display: block;
+        }
+
+        .zone-contenu:has(:target) #contenu-accueil {
+            display: none;
+        }
+
+        .bloc-texte:target {
+            display: block;
+        }
+        
+        .bloc-texte h2 { 
+            color: #111111; 
+            margin-top: 0; 
+            font-size: 22px; 
+            border-left: 4px solid skyblue;
+            padding-left: 10px;
+            margin-bottom: 20px;
+        }
+
+        .defilement-horizontal {
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 20px;
+            padding: 15px 5px;
+        }
+
+        .carte-livre {
+            width: 200px; 
+            max-width: 200px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .carte-livre:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+        }
+
+        .carte-livre img {
+            width: 100% !important;
+            height: 240px !important; 
+            max-height: 240px !important;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: #ddd;
+            display: block;
+            overflow: hidden; 
+        }
+
+        .carte-livre h3 {
+            font-size: 15px;
+            margin: 12px 0 4px 0;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .carte-livre .auteur {
+            font-size: 12px;
+            color: #777;
+            margin: 0 0 12px 0;
+            font-style: italic;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .actions-livre {
+            display: flex;
+            margin-top: auto;
+        }
+
+        .btn-lire {
+            flex: 1;
+            background-color: skyblue;
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 10px 5px;
+            border-radius: 5px;
+            text-align: center;
+            transition: background 0.2s ease;
+        }
+
+        .btn-lire:hover {
+            background-color: #61b3de;
+        }
+
+        .aucun-resultat {
+            display: none;
+            text-align: center;
+            width: 100%;
+            padding: 20px;
+            color: #777;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+       <img src="Logobiblio.png" alt="logo biblio connect" class="logo-site" width="400" height="400">
+    </header>
+
+    <nav>
+        <ul class="menu-onglets">
+            <li><a href="#">Accueil</a></li>
+            <li><a href="#contenu-romans">Romans & Littérature</a></li>
+            <li><a href="#contenu-philosophie">Psychologie & Philosophie</a></li>
+            <li><a href="#contenu-economie">Economie & Finance</a></li>
+        </ul>
+    </nav>
+
+    <div class="barre-recherche-container">
+        <div class="recherche-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="inputRecherche" placeholder="Rechercher un livre ou un auteur...">
+        </div>
+    </div>
+
+    <main class="zone-contenu">
+
+        <!-- ACCUEIL -->
+        <div id="contenu-accueil" class="bloc-texte">
+            <h2>Bienvenue sur Biblio Connect</h2>
+            <p>Découvrez notre bibliothèque numérique ainsi que son catalogue d'œuvres littéraires. Choisissez un rayon dans le menu ci-dessus pour commencer votre lecture.</p>
+        </div>
+
+
+
+
+
+
+<div id="contenu-accueil" class="bloc-text">
+
+
+     <div class="defilement-horizontal">
+                
+                <div class="carte-livre">               
+                    <img src="page de garde le petit prince.jpeg" alt="Le Petit Prince">
+                    <h3>Le Petit Prince</h3>
+                    <p class="auteur">A. de Saint-Exupéry</p>
+                    <div class="actions-livre">
+                        <a href="st_exupery_le_petit_prince.pdf" class="btn-lire">Lire le livre</a>
+                    </div> 
+                </div>                      
+
+                <div class="carte-livre">
+                    <img src="page de garde l_etranger ac.jpeg" alt="L'Etranger">
+                    <h3>L'Etranger</h3>
+                    <p class="auteur">Albert Camus</p>
+                    <div class="actions-livre">
+                        <a href="CAMUS-Letranger.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="page de garde la peste ac.jpeg" alt="La Peste">
+                    <h3>La Peste</h3>
+                    <p class="auteur">Albert Camus</p>
+                    <div class="actions-livre">
+                        <a href="CAMUS-La-peste.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+           
+                <div class="carte-livre">
+                    <img src="page de garde la chute ac.jpeg" alt="La Chute">
+                    <h3>La Chute</h3>
+                    <p class="auteur">Albert Camus</p>
+                    <div class="actions-livre">
+                        <a href="La_Chute.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="page de garde la maison biscornue.jpeg" alt="La maison biscornue">
+                    <h3>La maison biscornue</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="La_maison_biscornue_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>                   
+                
+                <div class="carte-livre">
+                    <img src="page de garde dix petits negres.jpeg" alt="Dix petits negres">
+                    <h3>Dix Petits negres</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="Dix_petits_negres_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="Drame en trois actes.jpeg" alt="Drame en trois actes">
+                    <h3>Drame en trois actes</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="Drame_en_trois_actes_-_Agatha_Christie(1).pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="Je ne suis pas coupable.jpeg" alt="Je ne suis pas coupable">
+                    <h3>Je ne suis pas coupable</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="Je_ne_suis_pas_coupable_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="Jeux de glaces.jpeg" alt="Jeux de glaces">
+                    <h3>Jeux de glaces</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="Jeux_de_glaces_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="L'affaire Protheroe.jpeg" alt="L'affaire Protheroe">
+                    <h3>L'affaire Protheroe</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="L_39_Affaire_Protheroe_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="La derniere enigme.jpeg" alt="La derniere enigme">
+                    <h3>La dernière énigme</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="La_derniere_enigme_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="La fete du potiron.jpeg" alt="La Fete du potiron">
+                    <h3>La Fete du potiron</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="La_Fete_du_potiron_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="aucun-resultat">Aucun livre ne correspond à votre recherche.</div>
+            
+        
+                <div class="carte-livre">
+                    <img src="l’art de la guerre.jpeg" alt="l'art de la guerre">
+                    <h3>l'art de la guerre</h3>
+                    <p class="auteur">Sun Tzu</p>
+                    <div class="actions-livre">
+                        <a href="art_de_la_guerre.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="L'art de toujours avoir raison.jpeg" alt="l'art de toujours avoir raison">
+                    <h3>L'art de toujours avoir raison</h3>
+                    <p class="auteur">Arthur SCHOPENHAUER</p>
+                    <div class="actions-livre">
+                        <a href="L’art de toujours avoir raison.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="Ainsi parlait Zarathoustra.jpeg" alt="Ainsi parlait Zarathoustra">
+                    <h3>Ainsi parlait Zarathoustra</h3>
+                    <p class="auteur">Friedrich Nietzsche</p>
+                    <div class="actions-livre">
+                        <a href="Ainsi parlait Zarathoustra.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="L’effet cumule.jpeg" alt="L’effet cumulé">
+                    <h3>L’effet cumulé</h3>
+                    <p class="auteur">Darren Hardy</p>
+                    <div class="actions-livre">
+                        <a href="L’effet cumulé.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="Le prince.jpeg" alt="Le prince">
+                    <h3>Le prince</h3>
+                    <p class="auteur">Machiavel</p>
+                    <div class="actions-livre">
+                        <a href="Machiavel - Le prince.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="Misere de la philosophie.jpeg" alt="Misere de la philosophie">
+                    <h3>Misère de la philosophie</h3>
+                    <p class="auteur">Karl Marx</p>
+                    <div class="actions-livre">
+                        <a href="Misère de la philosophie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="Pensees pour moi-meme - Marc Aurele_11376.jpeg" alt="Pensees pour moi-meme - Marc Aurele_11376">
+                    <h3>Pensées pour moi-même</h3>
+                    <p class="auteur">Marc Aurele</p>
+                    <div class="actions-livre">
+                        <a href="Pensees pour moi-meme - Marc Aurele_11376.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="Psychologie des foules.jpeg" alt="Psychologie des foules.pdf">
+                    <h3>Psychologie des foules</h3>
+                    <p class="auteur">Gustave Le Bon</p>
+                    <div class="actions-livre">
+                        <a href="Psychologie des foules.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="POWER - Les 48 lois de pouvoir - Robert Greene.jpeg" alt="POWER - Les 48 lois de pouvoir - Robert Greene">
+                    <h3>POWER - Les 48 lois de pouvoir</h3>
+                    <p class="auteur">Robert Greene</p>
+                    <div class="actions-livre">
+                        <a href="POWER - Les 48 lois de pouvoir - Robert Greene.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                
+
+                <div class="aucun-resultat">Aucun livre ne correspond à votre recherche.</div>
+            </div>
+       
+                
+                <div class="carte-livre">
+                    <img src="economie_monetaire_internationale.png" alt="Economie monétaire internationale">
+                    <h3>Economie monetaire internationale</h3>
+                    <p class="auteur">Albert Ondo Ossa</p>
+                    <div class="actions-livre">
+                        <a href="11economie_monetaire_internationale_2843710278_content.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="page de garde analyse financiere.jpeg" alt="Analyse financiere">
+                    <h3>Analyse financière</h3>
+                    <p class="auteur">Hubert De La Bruslerie</p>
+                    <div class="actions-livre">
+                        <a href="Analyse financière.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="l_essentiel_de_la_finance.png" alt="L'essentiel de la finance">
+                    <h3>L'essentiel de la finance</h3>
+                    <p class="auteur">Pierre Cabane</p>
+                    <div class="actions-livre">
+                        <a href="L’essentiel de la finance.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="page de garde la gestion financiere des entreprises pas a pas.jpeg" alt="La gestion financiere de l’entreprise pas a pas">
+                    <h3>La gestion financière de l'entreprise</h3>
+                    <p class="auteur">Phillipe Guillermic</p>
+                    <div class="actions-livre">
+                        <a href="La gestion financière de l’entreprise pas à pas.pdf" class="btn-lire">Lire le livre</a>                
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="page de garde le capital au 21e siecle.jpeg" alt="Le capital au 21e siecle">
+                    <h3>Le capital au 21e siecle</h3>
+                    <p class="auteur">Thomas Piketty</p>
+                    <div class="actions-livre">
+                        <a href="Le capital au 21e siècle.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="Recherche sur la nature et la richesse des nations.jpeg" alt="Recherche sur la nature et la richesse des nations">
+                    <h3>Richesse des nations</h3>
+                    <p class="auteur">Adam Smith</p>
+                    <div class="actions-livre">
+                        <a href="Recherche sur la nature et les causes de la richesse nationale .pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div> 
+
+                <div class="aucun-resultat">Aucun livre ne correspond à votre recherche.</div>
+            </div>
+        </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- ONGLET ROMANS & LITTERATURE -->
+        <div id="contenu-romans" class="bloc-texte">
+            <h2>Romans & Littérature</h2>
+            <div class="defilement-horizontal">
+                
+                <div class="carte-livre">               
+                    <img src="page de garde le petit prince.jpeg" alt="Le Petit Prince">
+                    <h3>Le Petit Prince</h3>
+                    <p class="auteur">A. de Saint-Exupéry</p>
+                    <div class="actions-livre">
+                        <a href="st_exupery_le_petit_prince.pdf" class="btn-lire">Lire le livre</a>
+                    </div> 
+                </div>                      
+
+                <div class="carte-livre">
+                    <img src="page de garde l_etranger ac.jpeg" alt="L'Etranger">
+                    <h3>L'Etranger</h3>
+                    <p class="auteur">Albert Camus</p>
+                    <div class="actions-livre">
+                        <a href="CAMUS-Letranger.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="page de garde la peste ac.jpeg" alt="La Peste">
+                    <h3>La Peste</h3>
+                    <p class="auteur">Albert Camus</p>
+                    <div class="actions-livre">
+                        <a href="CAMUS-La-peste.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+           
+                <div class="carte-livre">
+                    <img src="page de garde la chute ac.jpeg" alt="La Chute">
+                    <h3>La Chute</h3>
+                    <p class="auteur">Albert Camus</p>
+                    <div class="actions-livre">
+                        <a href="La_Chute.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="page de garde la maison biscornue.jpeg" alt="La maison biscornue">
+                    <h3>La maison biscornue</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="La_maison_biscornue_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>                   
+                
+                <div class="carte-livre">
+                    <img src="page de garde dix petits negres.jpeg" alt="Dix petits negres">
+                    <h3>Dix Petits negres</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="Dix_petits_negres_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="Drame en trois actes.jpeg" alt="Drame en trois actes">
+                    <h3>Drame en trois actes</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="Drame_en_trois_actes_-_Agatha_Christie(1).pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="Je ne suis pas coupable.jpeg" alt="Je ne suis pas coupable">
+                    <h3>Je ne suis pas coupable</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="Je_ne_suis_pas_coupable_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="Jeux de glaces.jpeg" alt="Jeux de glaces">
+                    <h3>Jeux de glaces</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="Jeux_de_glaces_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="L'affaire Protheroe.jpeg" alt="L'affaire Protheroe">
+                    <h3>L'affaire Protheroe</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="L_39_Affaire_Protheroe_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="La derniere enigme.jpeg" alt="La derniere enigme">
+                    <h3>La dernière énigme</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="La_derniere_enigme_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="La fete du potiron.jpeg" alt="La Fete du potiron">
+                    <h3>La Fete du potiron</h3>
+                    <p class="auteur">Agatha Christie</p>
+                    <div class="actions-livre">
+                        <a href="La_Fete_du_potiron_-_Agatha_Christie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="aucun-resultat">Aucun livre ne correspond à votre recherche.</div>
+            </div>
+        </div>
+
+        <!-- ONGLET PHILOSOPHIE ET PSYCHOLOGIE-->
+        <div id="contenu-philosophie" class="bloc-texte">
+            <h2>Philosophie & Psychologie</h2>
+            <div class="defilement-horizontal">
+                
+                <div class="carte-livre">
+                    <img src="l’art de la guerre.jpeg" alt="l'art de la guerre">
+                    <h3>l'art de la guerre</h3>
+                    <p class="auteur">Sun Tzu</p>
+                    <div class="actions-livre">
+                        <a href="art_de_la_guerre.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="L'art de toujours avoir raison.jpeg" alt="l'art de toujours avoir raison">
+                    <h3>L'art de toujours avoir raison</h3>
+                    <p class="auteur">Arthur SCHOPENHAUER</p>
+                    <div class="actions-livre">
+                        <a href="L'art de toujours avoir raison.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="Ainsi parlait Zarathoustra.jpeg" alt="Ainsi parlait Zarathoustra">
+                    <h3>Ainsi parlait Zarathoustra</h3>
+                    <p class="auteur">Friedrich Nietzsche</p>
+                    <div class="actions-livre">
+                        <a href="Ainsi parlait Zarathoustra.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="L’effet cumule.jpeg" alt="L’effet cumulé">
+                    <h3>L’effet cumulé</h3>
+                    <p class="auteur">Darren Hardy</p>
+                    <div class="actions-livre">
+                        <a href="L’effet cumulé.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="Le prince.jpeg" alt="Le prince">
+                    <h3>Le prince</h3>
+                    <p class="auteur">Machiavel</p>
+                    <div class="actions-livre">
+                        <a href="Machiavel - Le prince.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="Misere de la philosophie.jpeg" alt="Misere de la philosophie">
+                    <h3>Titre Philosophie</h3>
+                    <p class="auteur">Karl Marx</p>
+                    <div class="actions-livre">
+                        <a href="Misère de la philosophie.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="Pensees pour moi-meme - Marc Aurele_11376.jpeg" alt="Pensees pour moi-meme - Marc Aurele_11376">
+                    <h3>Titre Philosophie</h3>
+                    <p class="auteur">Marc Aurele</p>
+                    <div class="actions-livre">
+                        <a href="Pensees pour moi-meme - Marc Aurele_11376.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+                
+                <div class="carte-livre">
+                    <img src="Psychologie des foules.jpeg" alt="Psychologie des foules.pdf">
+                    <h3>Titre Psychologie des foules</h3>
+                    <p class="auteur">Gustave Le Bon</p>
+                    <div class="actions-livre">
+                        <a href="Psychologie des foules.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="POWER - Les 48 lois de pouvoir - Robert Greene.jpeg" alt="POWER - Les 48 lois de pouvoir - Robert Greene">
+                    <h3>POWER - Les 48 lois de pouvoir</h3>
+                    <p class="auteur">Robert Greene</p>
+                    <div class="actions-livre">
+                        <a href="POWER - Les 48 lois de pouvoir - Robert Greene.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="aucun-resultat">Aucun livre ne correspond à votre recherche.</div>
+            </div>
+        </div>
+        
+
+        <!-- ONGLET FINANCE & ECONOMIE -->
+        <div id="contenu-economie" class="bloc-texte">
+            <h2>Economie & Finance</h2>
+            <div class="defilement-horizontal">
+                
+                <div class="carte-livre">
+                    <img src="economie_monetaire_internationale.png" alt="Economie monétaire internationale">
+                    <h3>Economie monetaire internationale</h3>
+                    <p class="auteur">Albert Ondo Ossa</p>
+                    <div class="actions-livre">
+                        <a href="11economie_monetaire_internationale_2843710278_content.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="page de garde analyse financiere.jpeg" alt="Analyse financiere">
+                    <h3>Analyse financière</h3>
+                    <p class="auteur">Hubert De La Bruslerie</p>
+                    <div class="actions-livre">
+                        <a href="Analyse financière.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="l_essentiel_de_la_finance.png" alt="L'essentiel de la finance">
+                    <h3>L'essentiel de la finance</h3>
+                    <p class="auteur">Pierre Cabane</p>
+                    <div class="actions-livre">
+                        <a href="L’essentiel de la finance.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="page de garde la gestion financiere des entreprises pas a pas.jpeg" alt="La gestion financiere de l’entreprise pas a pas">
+                    <h3>La gestion financière de l'entreprise</h3>
+                    <p class="auteur">Phillipe Guillermic</p>
+                    <div class="actions-livre">
+                        <a href="La gestion financiere de l’entreprise pas a pas.pdf" class="btn-lire">Lire le livre</a>                
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="page de garde le capital au 21e siecle.jpeg" alt="Le capital au 21e siecle">
+                    <h3>Le capital au 21e siecle</h3>
+                    <p class="auteur">Thomas Piketty</p>
+                    <div class="actions-livre">
+                        <a href="Le capital au 21e siecle.pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div>
+
+                <div class="carte-livre">
+                    <img src="Recherche sur la nature et la richesse des nations.jpeg" alt="Recherche sur la nature et la richesse des nations">
+                    <h3>Richesse des nations</h3>
+                    <p class="auteur">Adam Smith</p>
+                    <div class="actions-livre">
+                        <a href="Recherche sur la nature et les causes de la richesse nationale .pdf" class="btn-lire">Lire le livre</a>
+                    </div>
+                </div> 
+
+                <div class="aucun-resultat">Aucun livre ne correspond à votre recherche.</div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.getElementById('inputRecherche').addEventListener('input', function(e) {
+            let recherche = e.target.value.toLowerCase().trim();
+            
+            document.querySelectorAll('.defilement-horizontal').forEach(grille => {
+                let livres = grille.querySelectorAll('.carte-livre');
+                let aucunResultatMsg = grille.querySelector('.aucun-resultat');
+                let compteurTrouve = 0;
+
+                livres.forEach(livre => {
+                    let titre = livre.querySelector('h3').textContent.toLowerCase();
+                    let auteur = livre.querySelector('.auteur').textContent.toLowerCase();
+
+                    if (titre.includes(recherche) || auteur.includes(recherche)) {
+                        livre.style.display = 'flex';
+                        compteurTrouve++;
+                    } else {
+                        livre.style.display = 'none';
+                    }
+                });
+
+                if (compteurTrouve === 0 && recherche !== '') {
+                    if (aucunResultatMsg) aucunResultatMsg.style.display = 'block';
+                } else {
+                    if (aucunResultatMsg) aucunResultatMsg.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
